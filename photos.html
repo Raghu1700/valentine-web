@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Journey Together ❤️</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #ffe6ea, #ffb6c1);
+            font-family: 'Montserrat', sans-serif;
+            padding: 20px;
+        }
+
+        .photos-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .anniversary-title {
+            color: #ff69b4;
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            text-shadow: 2px 2px 4px rgba(255, 182, 193, 0.3);
+        }
+
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .photo-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(255, 182, 193, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .photo-item:hover {
+            transform: translateY(-10px);
+        }
+
+        .photo-item img {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .photo-caption {
+            color: #ff69b4;
+            text-align: center;
+            font-size: 1.1rem;
+            padding: 0.5rem;
+        }
+
+        .love-message {
+            text-align: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-top: 3rem;
+            text-shadow: 1px 1px 2px rgba(255, 182, 193, 0.5);
+        }
+
+        #toggleMusic {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            color: #ff69b4;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 182, 193, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        #toggleMusic:hover {
+            background: #ff69b4;
+            color: white;
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="photos-page">
+    <div class="hearts-container"></div>
+    <div class="photos-container">
+        <h1 class="anniversary-title">3 Beautiful Years Together</h1>
+        <div class="photo-gallery">
+            <div class="photo-item" style="--delay: 0s">
+                <img src="img1.jpg" alt="Us 1">
+                <div class="photo-caption">Where it all began ❤️</div>
+            </div>
+            <div class="photo-item" style="--delay: 0.3s">
+                <img src="img2.jpg" alt="Us 2">
+                <div class="photo-caption">Growing stronger together 💑</div>
+            </div>
+            <div class="photo-item" style="--delay: 0.6s">
+                <img src="img3.jpg" alt="Us 3">
+                <div class="photo-caption">Forever and always 💕</div>
+            </div>
+            <div class="photo-item" style="--delay: 0.9s">
+                <img src="img4.jpg" alt="Us 4">
+                <div class="photo-caption">Our endless love story 💖</div>
+            </div>
+        </div>
+        <div class="love-message">
+            <p>Every moment with you is a treasure</p>
+            <p>Here's to many more years of love and laughter</p>
+        </div>
+    </div>
+    <div class="music-player">
+        <button id="toggleMusic">
+            <i class="fas fa-music"></i>
+        </button>
+        <audio id="bgMusic" loop>
+            <source src="https://cdn.pixabay.com/download/audio/2024/02/10/wanna-be-yours.mp3" type="audio/mp3">
+        </audio>
+    </div>
+</body>
+</html>

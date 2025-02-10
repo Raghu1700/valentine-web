@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Valentine ❤️</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #fff0f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .question-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(255, 182, 193, 0.3);
+            max-width: 500px;
+            margin: 0 auto;
+            border: 2px solid #ffb6c1;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .btn {
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: scale(1.1);
+            background-color: #ff1493;
+        }
+
+        .hearts {
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+
+        .hearts span {
+            animation: float 2s infinite ease-in-out;
+            display: inline-block;
+            margin: 0 10px;
+        }
+
+        .hearts span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .hearts span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .love-gif {
+            max-width: 300px;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+
+        .love-quote {
+            font-style: italic;
+            color: #ff69b4;
+            margin-top: 20px;
+        }
+
+        #game-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #fff0f5;
+            z-index: 1000;
+        }
+
+        #gameCanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        #game-instructions {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: #ff69b4;
+            z-index: 1001;
+            box-shadow: 0 2px 10px rgba(255, 105, 180, 0.2);
+        }
+
+        #exit-game {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        #win-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px 40px;
+            border-radius: 20px;
+            z-index: 1002;
+            text-align: center;
+            color: #ff69b4;
+            box-shadow: 0 4px 20px rgba(255, 105, 180, 0.3);
+        }
+
+        #noBtn {
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .cat-player {
+            width: 40px;
+            height: 40px;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjAgNUMxMS43MTYgNSA1IDExLjcxNiA1IDIwQzUgMjguMjg0IDExLjcxNiAzNSAyMCAzNUMyOC4yODQgMzUgMzUgMjguMjg0IDM1IDIwQzM1IDExLjcxNiAyOC4yODQgNSAyMCA1Wk0yNi42IDIzLjJDMjYuNiAyNC45NjczIDI1LjE2NzMgMjYuNCAyMy40IDI2LjRDMjEuNjMyNyAyNi40IDIwLjIgMjQuOTY3MyAyMC4yIDIzLjJDMjAuMiAyMS40MzI3IDIxLjYzMjcgMjAgMjMuNCAyMEMyNS4xNjczIDIwIDI2LjYgMjEuNDMyNyAyNi42IDIzLjJaTTE2LjYgMjMuMkMxNi42IDI0Ljk2NzMgMTUuMTY3MyAyNi40IDEzLjQgMjYuNEMxMS42MzI3IDI2LjQgMTAuMiAyNC45NjczIDEwLjIgMjMuMkMxMC4yIDIxLjQzMjcgMTEuNjMyNyAyMCAxMy40IDIwQzE1LjE2NzMgMjAgMTYuNiAyMS40MzI3IDE2LjYgMjMuMlpNMjAgMjguNkMyMy4zMTM3IDI4LjYgMjYgMjYuOTEzNyAyNiAyNC44QzI2IDIyLjY4NjMgMjMuMzEzNyAyMSAyMCAyMUMxNi42ODYzIDIxIDE0IDIyLjY4NjMgMTQgMjQuOEMxNCAyNi45MTM3IDE2LjY4NjMgMjguNiAyMCAyOC42WiIgZmlsbD0iI2ZmYjZjMSIvPjwvc3ZnPg==');
+            background-size: contain;
+            position: absolute;
+            animation: bounce 0.5s infinite alternate;
+        }
+
+        .cat-target {
+            width: 40px;
+            height: 40px;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjAgNUMxMS43MTYgNSA1IDExLjcxNiA1IDIwQzUgMjguMjg0IDExLjcxNiAzNSAyMCAzNUMyOC4yODQgMzUgMzUgMjguMjg0IDM1IDIwQzM1IDExLjcxNiAyOC4yODQgNSAyMCA1Wk0yNi42IDIzLjJDMjYuNiAyNC45NjczIDI1LjE2NzMgMjYuNCAyMy40IDI2LjRDMjEuNjMyNyAyNi40IDIwLjIgMjQuOTY3MyAyMC4yIDIzLjJDMjAuMiAyMS40MzI3IDIxLjYzMjcgMjAgMjMuNCAyMEMyNS4xNjczIDIwIDI2LjYgMjEuNDMyNyAyNi42IDIzLjJaTTE2LjYgMjMuMkMxNi42IDI0Ljk2NzMgMTUuMTY3MyAyNi40IDEzLjQgMjYuNEMxMS42MzI3IDI2LjQgMTAuMiAyNC45NjczIDEwLjIgMjMuMkMxMC4yIDIxLjQzMjcgMTEuNjMyNyAyMCAxMy40IDIwQzE1LjE2NzMgMjAgMTYuNiAyMS40MzI3IDE2LjYgMjMuMlpNMjAgMjguNkMyMy4zMTM3IDI4LjYgMjYgMjYuOTEzNyAyNiAyNC44QzI2IDIyLjY4NjMgMjMuMzEzNyAyMSAyMCAyMUMxNi42ODYzIDIxIDE0IDIyLjY4NjMgMTQgMjQuOEMxNCAyNi45MTM3IDE2LjY4NjMgMjguNiAyMCAyOC42WiIgZmlsbD0iI2ZmMTQ5MyIvPjwvc3ZnPg==');
+            background-size: contain;
+            position: absolute;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="first-question" class="question-container">
+            <h1>Hey, is this Subhi?</h1>
+            <div class="button-container">
+                <button onclick="answerFirstQuestion(true)" class="btn">Yes</button>
+                <button onclick="answerFirstQuestion(false)" class="btn">No</button>
+            </div>
+        </div>
+
+        <div id="valentine-question" class="question-container hidden">
+            <div class="hearts">
+                <span>❤️</span>
+                <span>💖</span>
+                <span>💝</span>
+            </div>
+            <h1>Will you be my Valentine?</h1>
+            <div class="button-container">
+                <button onclick="answerValentine(true)" class="btn">Yes</button>
+                <button id="noBtn" class="btn">No</button>
+            </div>
+            <button id="please-btn" onclick="answerValentine(true)" class="btn hidden">Please? Say yes... 🥺</button>
+        </div>
+
+        <div id="success-message" class="question-container hidden">
+            <div class="hearts">
+                <span>❤️</span>
+                <span>💖</span>
+                <span>💝</span>
+            </div>
+            <h1>Yayy! I love you so much! ❤️</h1>
+            <img src="https://media.giphy.com/media/LnKonfpQ44fNvuGLkA/giphy.gif" alt="Cute cat with rose" class="love-gif">
+            <button id="play-game-btn" class="btn">Play Game 🎮</button>
+            <p class="love-quote">"Every love story is beautiful, but ours is my favorite." 💝</p>
+        </div>
+
+        <div id="wrong-person" class="question-container hidden">
+            <h1>Oops! This page is only for Subhi! ❤️</h1>
+        </div>
+    </div>
+
+    <div id="game-container" class="hidden">
+        <canvas id="gameCanvas"></canvas>
+        <button id="exit-game">Exit Game ✖️</button>
+        <div id="game-instructions">
+            Help Subhi find Raghu in the maze! Use arrow keys to move ➡️⬆️⬇️⬅️
+        </div>
+        <div id="win-message" class="hidden">
+            <h2>Congratulations! Subhi found Raghu! 💝</h2>
+        </div>
+    </div>
+
+    <script>
+        // Maze configuration
+        const MAZE_CONFIG = {
+            wallColor: '#ff69b4',
+            pathColor: '#fff0f5',
+            layout: [
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+                [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+                [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 1],
+                [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+                [1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+                [1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1],
+                [1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+                [1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1],
+                [1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1],
+                [1, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1],
+                [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+            ]
+        };
+
+        // Game class
+        class Game {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                
+                // Set initial canvas size
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                
+                // Initialize game state
+                this.maze = MAZE_CONFIG.layout;
+                
+                // Calculate cell size based on screen size and maze dimensions
+                const maxCellWidth = (window.innerWidth * 0.8) / this.maze[0].length;
+                const maxCellHeight = (window.innerHeight * 0.8) / this.maze.length;
+                this.cellSize = Math.min(maxCellWidth, maxCellHeight);
+                
+                // Center the maze on screen
+                this.offsetX = (window.innerWidth - (this.maze[0].length * this.cellSize)) / 2;
+                this.offsetY = (window.innerHeight - (this.maze.length * this.cellSize)) / 2;
+                
+                // Position cats
+                this.subhi = {
+                    x: this.cellSize,
+                    y: this.cellSize,
+                    width: this.cellSize * 0.8,
+                    height: this.cellSize * 0.8,
+                    speed: this.cellSize / 8
+                };
+
+                // Position Raghu at bottom right
+                this.raghu = {
+                    x: (this.maze[0].length - 2) * this.cellSize,
+                    y: (this.maze.length - 2) * this.cellSize,
+                    width: this.cellSize * 0.8,
+                    height: this.cellSize * 0.8
+                };
+
+                this.keys = {};
+                this.gameWon = false;
+                
+                // Event listeners for keyboard
+                window.addEventListener('keydown', (e) => {
+                    this.keys[e.key] = true;
+                    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+                        e.preventDefault();
+                    }
+                });
+
+                window.addEventListener('keyup', (e) => {
+                    this.keys[e.key] = false;
+                });
+
+                // Handle window resize
+                window.addEventListener('resize', () => {
+                    this.canvas.width = window.innerWidth;
+                    this.canvas.height = window.innerHeight;
+                    
+                    const maxCellWidth = (window.innerWidth * 0.8) / this.maze[0].length;
+                    const maxCellHeight = (window.innerHeight * 0.8) / this.maze.length;
+                    this.cellSize = Math.min(maxCellWidth, maxCellHeight);
+                    
+                    this.offsetX = (window.innerWidth - (this.maze[0].length * this.cellSize)) / 2;
+                    this.offsetY = (window.innerHeight - (this.maze.length * this.cellSize)) / 2;
+                });
+                
+                // Create cat sprites
+                this.subhiSprite = new Image();
+                this.subhiSprite.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjAgNUMxMS43MTYgNSA1IDExLjcxNiA1IDIwQzUgMjguMjg0IDExLjcxNiAzNSAyMCAzNUMyOC4yODQgMzUgMzUgMjguMjg0IDM1IDIwQzM1IDExLjcxNiAyOC4yODQgNSAyMCA1Wk0yNi42IDIzLjJDMjYuNiAyNC45NjczIDI1LjE2NzMgMjYuNCAyMy40IDI2LjRDMjEuNjMyNyAyNi40IDIwLjIgMjQuOTY3MyAyMC4yIDIzLjJDMjAuMiAyMS40MzI3IDIxLjYzMjcgMjAgMjMuNCAyMEMyNS4xNjczIDIwIDI2LjYgMjEuNDMyNyAyNi42IDIzLjJaTTE2LjYgMjMuMkMxNi42IDI0Ljk2NzMgMTUuMTY3MyAyNi40IDEzLjQgMjYuNEMxMS42MzI3IDI2LjQgMTAuMiAyNC45NjczIDEwLjIgMjMuMkMxMC4yIDIxLjQzMjcgMTEuNjMyNyAyMCAxMy40IDIwQzE1LjE2NzMgMjAgMTYuNiAyMS40MzI3IDE2LjYgMjMuMlpNMjAgMjguNkMyMy4zMTM3IDI4LjYgMjYgMjYuOTEzNyAyNiAyNC44QzI2IDIyLjY4NjMgMjMuMzEzNyAyMSAyMCAyMUMxNi42ODYzIDIxIDE0IDIyLjY4NjMgMTQgMjQuOEMxNCAyNi45MTM3IDE2LjY4NjMgMjguNiAyMCAyOC42WiIgZmlsbD0iI2ZmYjZjMSIvPjwvc3ZnPg==';
+                
+                this.raghuSprite = new Image();
+                this.raghuSprite.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMjAgNUMxMS43MTYgNSA1IDExLjcxNiA1IDIwQzUgMjguMjg0IDExLjcxNiAzNSAyMCAzNUMyOC4yODQgMzUgMzUgMjguMjg0IDM1IDIwQzM1IDExLjcxNiAyOC4yODQgNSAyMCA1Wk0yNi42IDIzLjJDMjYuNiAyNC45NjczIDI1LjE2NzMgMjYuNCAyMy40IDI2LjRDMjEuNjMyNyAyNi40IDIwLjIgMjQuOTY3MyAyMC4yIDIzLjJDMjAuMiAyMS40MzI3IDIxLjYzMjcgMjAgMjMuNCAyMEMyNS4xNjczIDIwIDI2LjYgMjEuNDMyNyAyNi42IDIzLjJaTTE2LjYgMjMuMkMxNi42IDI0Ljk2NzMgMTUuMTY3MyAyNi40IDEzLjQgMjYuNEMxMS42MzI3IDI2LjQgMTAuMiAyNC45NjczIDEwLjIgMjMuMkMxMC4yIDIxLjQzMjcgMTEuNjMyNyAyMCAxMy40IDIwQzE1LjE2NzMgMjAgMTYuNiAyMS40MzI3IDE2LjYgMjMuMlpNMjAgMjguNkMyMy4zMTM3IDI4LjYgMjYgMjYuOTEzNyAyNiAyNC44QzI2IDIyLjY4NjMgMjMuMzEzNyAyMSAyMCAyMUMxNi42ODYzIDIxIDE0IDIyLjY4NjMgMTQgMjQuOEMxNCAyNi45MTM3IDE2LjY4NjMgMjguNiAyMCAyOC42WiIgZmlsbD0iI2ZmMTQ5MyIvPjwvc3ZnPg==';
+                
+                this.bounceOffset = 0;
+                this.bounceDirection = 1;
+            }
+
+            update() {
+                if (this.gameWon) return;
+
+                let newX = this.subhi.x;
+                let newY = this.subhi.y;
+
+                if (this.keys['ArrowUp']) newY -= this.subhi.speed;
+                if (this.keys['ArrowDown']) newY += this.subhi.speed;
+                if (this.keys['ArrowLeft']) newX -= this.subhi.speed;
+                if (this.keys['ArrowRight']) newX += this.subhi.speed;
+
+                // Get maze cell coordinates
+                const cellX = Math.floor(newX / this.cellSize);
+                const cellY = Math.floor(newY / this.cellSize);
+
+                // Check if the move is valid (not hitting a wall)
+                if (cellY >= 0 && cellY < this.maze.length && 
+                    cellX >= 0 && cellX < this.maze[0].length && 
+                    this.maze[cellY][cellX] === 0) {
+                    this.subhi.x = newX;
+                    this.subhi.y = newY;
+                }
+
+                // Check if Subhi found Raghu
+                const distance = Math.sqrt(
+                    Math.pow((this.subhi.x - this.raghu.x), 2) + 
+                    Math.pow((this.subhi.y - this.raghu.y), 2)
+                );
+
+                if (distance < this.cellSize) {
+                    this.gameWon = true;
+                    document.getElementById('win-message').classList.remove('hidden');
+                }
+            }
+
+            draw() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.ctx.fillStyle = '#fff0f5';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+                // Draw maze
+                for (let y = 0; y < this.maze.length; y++) {
+                    for (let x = 0; x < this.maze[y].length; x++) {
+                        if (this.maze[y][x] === 1) {
+                            this.ctx.fillStyle = '#ff69b4';
+                            this.ctx.fillRect(
+                                this.offsetX + x * this.cellSize,
+                                this.offsetY + y * this.cellSize,
+                                this.cellSize,
+                                this.cellSize
+                            );
+                        }
+                    }
+                }
+
+                // Update bounce animation
+                this.bounceOffset += 0.5 * this.bounceDirection;
+                if (this.bounceOffset >= 5 || this.bounceOffset <= 0) {
+                    this.bounceDirection *= -1;
+                }
+
+                // Draw Subhi cat with bounce
+                this.ctx.drawImage(
+                    this.subhiSprite,
+                    this.offsetX + this.subhi.x,
+                    this.offsetY + this.subhi.y - this.bounceOffset,
+                    this.subhi.width,
+                    this.subhi.height
+                );
+
+                // Draw Raghu cat
+                this.ctx.drawImage(
+                    this.raghuSprite,
+                    this.offsetX + this.raghu.x,
+                    this.offsetY + this.raghu.y,
+                    this.raghu.width,
+                    this.raghu.height
+                );
+
+                // Draw name tags
+                this.ctx.fillStyle = '#ff69b4';
+                this.ctx.font = 'bold 20px Arial';
+                this.ctx.textAlign = 'center';
+                
+                this.ctx.fillText(
+                    'Subhi', 
+                    this.offsetX + this.subhi.x + this.subhi.width / 2,
+                    this.offsetY + this.subhi.y - 10
+                );
+
+                this.ctx.fillText(
+                    'Raghu',
+                    this.offsetX + this.raghu.x + this.raghu.width / 2,
+                    this.offsetY + this.raghu.y - 10
+                );
+            }
+
+            gameLoop() {
+                this.update();
+                this.draw();
+                if (!this.gameWon) {
+                    requestAnimationFrame(() => this.gameLoop());
+                }
+            }
+
+            start() {
+                this.gameLoop();
+            }
+        }
+
+        // Page functionality
+        let game = null;
+
+        function answerFirstQuestion(isSubhi) {
+            document.getElementById('first-question').classList.add('hidden');
+            if (isSubhi) {
+                document.getElementById('valentine-question').classList.remove('hidden');
+            } else {
+                document.getElementById('wrong-person').classList.remove('hidden');
+            }
+        }
+
+        function answerValentine(isYes) {
+            if (isYes) {
+                document.getElementById('valentine-question').classList.add('hidden');
+                document.getElementById('success-message').classList.remove('hidden');
+            } else {
+                document.getElementById('please-btn').classList.remove('hidden');
+            }
+        }
+
+        function moveButton() {
+            const button = document.getElementById('noBtn');
+            const container = document.querySelector('.question-container');
+            const containerRect = container.getBoundingClientRect();
+            
+            // Get random position within the container
+            const maxX = containerRect.width - button.offsetWidth;
+            const maxY = containerRect.height - button.offsetHeight;
+            
+            const randomX = Math.random() * maxX;
+            const randomY = Math.random() * maxY;
+            
+            button.style.position = 'absolute';
+            button.style.left = `${randomX}px`;
+            button.style.top = `${randomY}px`;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const noBtn = document.getElementById('noBtn');
+            noBtn.addEventListener('mouseover', moveButton);
+        });
+
+        document.getElementById('play-game-btn').addEventListener('click', () => {
+            const gameContainer = document.getElementById('game-container');
+            gameContainer.classList.remove('hidden');
+            
+            const canvas = document.getElementById('gameCanvas');
+            if (!game) {
+                game = new Game(canvas);
+                game.start();
+            }
+        });
+
+        document.getElementById('exit-game').addEventListener('click', () => {
+            const gameContainer = document.getElementById('game-container');
+            gameContainer.classList.add('hidden');
+            game = null;
+        });
+    </script>
+</body>
+</html>
